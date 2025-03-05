@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Colorizer</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
+        input, button { margin-top: 10px; }
+        img { margin-top: 20px; max-width: 500px; }
+    </style>
+</head>
+<body>
+    <h1>Image Colorizer</h1>
+    <input type="file" id="fileInput">
+    <button onclick="uploadImage()">Upload & Convert</button>
+    <br>
+    <img id="originalImage" src="" style="display:none;">
+    <br>
+    <img id="colorizedImage" src="" style="display:none;">
+    <br>
+    <button id="downloadButton" style="display:none;" onclick="downloadImage()">Download Colorized Image</button>
+
+    <script>
+        function uploadImage() {
+            let fileInput = document.getElementById('fileInput');
+            if (!fileInput.files.length) {
+                alert('Please select an image!');
+                return;
+            }
+            let formData = new FormData();
+            formData.append('image', fileInput.files[0]);
+            
+            fetch('/upload', { method: 'POST', body: formData })
+                .then(response => response.text())
+                .then(imagePath => {
+                    document.getElementById('originalImage').src = URL.createObjectURL(fileInput.files[0]);
+                    document.getElementById('originalImage').style.display = 'block';
+                    document.getElementById('colorizedImage').src = imagePath;
+                    document.getElementById('colorizedImage').style.display = 'block';
+                    document.getElementById('downloadButton').style.display = 'block';
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function downloadImage() {
+            window.location.href = '/download';
+        }
+    </script>
+</body>
+</html>
